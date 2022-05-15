@@ -1,0 +1,10 @@
+{
+	"id": "timekeeper",
+	"name": "Timekeeper",
+	"version": "1.0.0",
+	"minAppVersion": "0.12.0",
+	"description": "Simple plugins that maintains creation and modification time of files",
+	"author": "Sandorex",
+	"authorUrl": "https://github.com/sandorex",
+	"isDesktopOnly": false
+}
