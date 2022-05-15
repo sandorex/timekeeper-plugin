@@ -1,13 +1,10 @@
 ## Timekeeper Obsidian Plugin
-Very simple plugin that updates modification time property in frontmatter on modification
+Very simple plugin that updates modification time property in the frontmatter
 
 ## How To Use
-Set your time format in settings page and add `mtime` (name is configurable) property in frontmatter in every file you want it and this plugin will update it each time you modify the file
+Add `mtime` (name is configurable) property in frontmatter in every file you want it and this plugin will update it each time you modify the file
 
-## Caveats
-Due the difficulty of adding frontmatter properties without the API the plugin will only modify existing keys but not add them unless requested by enabling `On Create` option which in itself is not perfect
-
-**The API is said to be on it's way so when it comes ill add the functionality**
+**This plugin currently does not add any frontmatter properties but only modify them using regex, beware if you use the set property name anywhere in file as it will be replaced**
 
 ## Installation
 ### Manual
