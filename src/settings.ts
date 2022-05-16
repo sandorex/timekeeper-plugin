@@ -6,13 +6,15 @@ export interface TimekeeperSettings {
 	modificationTimeKey: string;
 	timeFormat: string;
 	appendOnCreate: boolean;
+	ignoredPaths: string[];
 }
 
 export const DEFAULT_SETTINGS: TimekeeperSettings = {
 	creationTimeKey: "ctime",
 	modificationTimeKey: "mtime",
 	timeFormat: "YYYY-DD-MM[T]HH:mm[Z]",
-	appendOnCreate: false
+	appendOnCreate: false,
+	ignoredPaths: [],
 }
 
 export class TimekeeperSettingsTab extends PluginSettingTab {
@@ -70,6 +72,19 @@ export class TimekeeperSettingsTab extends PluginSettingTab {
 
 					await this.plugin.saveSettings();
 				}));
+
+		new Setting(containerEl)
+			.setName("Ignore Paths")
+			.setDesc("Paths that are going to be ignored both in commands and on modify")
+			.addTextArea(cb => cb
+				.setValue(this.plugin.settings.ignoredPaths.join("\n"))
+				.onChange(async (value) => {
+					if (value.length == 0)
+						return;
+
+					this.plugin.settings.ignoredPaths = value.split("\n");
+					await this.plugin.saveSettings();
+				}))
 
 		// TODO: enable/disable the event on click here!
 		// new Setting(containerEl)

@@ -6,7 +6,7 @@ export default class TimekeeperPlugin extends Plugin {
 	settings: TimekeeperSettings;
 	modifyERef: EventRef;
 
-	// replaces yaml root key in form 'key:' to replacement string
+	// replaces yaml root key in form 'key: ..' to 'key: {replacement}'
 	replaceRootKey(data: string, key: string, replacement: string): string {
 		return data.replace(RegExp(`^${key} *:(.*[ \t]*)\$`, 'gmu'), `${key}: ${replacement}`)
 	}
@@ -15,13 +15,16 @@ export default class TimekeeperPlugin extends Plugin {
 		return window.moment().format(this.settings.timeFormat);
 	}
 
-	enableCreateEvent() {
-		this.registerEvent(this.app.vault.on("create", this.create, this));
-	}
+	// enableCreateEvent() {
+	// 	this.registerEvent(this.app.vault.on("create", this.create, this));
+	// }
 
 	// function that goes through all files and finds those that are missing frontmatter keys
 	findFilesThatNeedFixing(): TFile[] {
 		return this.app.vault.getMarkdownFiles().filter(file => {
+			if (this.settings.ignoredPaths.contains(file.path) || this.settings.ignoredPaths.contains(file.parent.path))
+				return false;
+
 			var cache = this.app.metadataCache.getFileCache(file).frontmatter;
 
 			// im unsure what to do if there is no cache
@@ -33,32 +36,35 @@ export default class TimekeeperPlugin extends Plugin {
 		});
 	}
 
-	async create(file: TAbstractFile) {
-		if (file instanceof TFile) {
-			console.log("created file", file);
+	// 	async create(file: TAbstractFile) {
+	// 		if (file instanceof TFile) {
+	// 			console.log("created file", file);
 
-			var content = await file.vault.read(file);
-			if (content.length == 0) {
-				content = `---
-${this.settings.creationTimeKey}: X
-${this.settings.modificationTimeKey}: X
----`;
-			}
+	// 			var content = await file.vault.read(file);
+	// 			if (content.length == 0) {
+	// 				content = `---
+	// ${this.settings.creationTimeKey}: X
+	// ${this.settings.modificationTimeKey}: X
+	// ---`;
+	// 			}
 
-			// TODO: clean this up
-			var editedContent = this.replaceRootKey(content, this.settings.creationTimeKey, this.getDatetime());
-			editedContent = this.replaceRootKey(editedContent, this.settings.modificationTimeKey, this.getDatetime());
+	// 			// TODO: clean this up
+	// 			var editedContent = this.replaceRootKey(content, this.settings.creationTimeKey, this.getDatetime());
+	// 			editedContent = this.replaceRootKey(editedContent, this.settings.modificationTimeKey, this.getDatetime());
 
-			console.log("should look like this", editedContent);
+	// 			console.log("should look like this", editedContent);
 
-			this.app.vault.offref(this.modifyERef);
-			await this.app.vault.modify(file, editedContent);
-			this.modifyERef = this.app.vault.on("modify", this.modify, this);
-		}
-	}
+	// 			this.app.vault.offref(this.modifyERef);
+	// 			await this.app.vault.modify(file, editedContent);
+	// 			this.modifyERef = this.app.vault.on("modify", this.modify, this);
+	// 		}
+	// 	}
 
 	async modify(file: TAbstractFile) {
 		if (file instanceof TFile) {
+			if (this.settings.ignoredPaths.contains(file.path) || this.settings.ignoredPaths.contains(file.parent.path))
+				return;
+
 			var editedContent = this.replaceRootKey(
 				await file.vault.read(file),
 				this.settings.modificationTimeKey,

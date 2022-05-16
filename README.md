@@ -1,10 +1,21 @@
 ## Timekeeper Obsidian Plugin
 Very simple plugin that updates modification time property in the frontmatter
 
-## How To Use
-Add `mtime` (name is configurable) property in frontmatter in every file you want it and this plugin will update it each time you modify the file
+## How Does It Work
+Each file should have following properties in [frontmatter](https://help.obsidian.md/Advanced+topics/YAML+front+matter) (you can change the property names in settings)
+```
+---
+ctime: <creation time>
+mtime:
+---
+...
+```
 
-**This plugin currently does not add any frontmatter properties but only modify them using regex, beware if you use the set property name anywhere in file as it will be replaced**
+And each time you save the file `mtime` is going to be set to current timestamp with format set in settings tab, *ctime has to be set manually for now*
+
+**Do note that the plugin will not add these properties you have to do it yourself, command is provided that shows files which are missing these properties**
+
+![](./images/command.png)
 
 ## Installation
 ### Manual
