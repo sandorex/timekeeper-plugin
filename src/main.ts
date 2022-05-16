@@ -1,4 +1,5 @@
 import { EventRef, Plugin, TAbstractFile, TFile } from "obsidian";
+import { ShowFilesModal } from "./modal";
 import { DEFAULT_SETTINGS, TimekeeperSettings, TimekeeperSettingsTab } from "./settings";
 
 export default class TimekeeperPlugin extends Plugin {
@@ -7,7 +8,7 @@ export default class TimekeeperPlugin extends Plugin {
 
 	// replaces yaml root key in form 'key:' to replacement string
 	replaceRootKey(data: string, key: string, replacement: string): string {
-		return data.replace(RegExp(`^${key} *:(.*\\s*)\$`, 'gmu'), `${key}: ${replacement}`)
+		return data.replace(RegExp(`^${key} *:(.*[ \t]*)\$`, 'gmu'), `${key}: ${replacement}`)
 	}
 
 	getDatetime(): string {
@@ -19,9 +20,18 @@ export default class TimekeeperPlugin extends Plugin {
 	}
 
 	// function that goes through all files and finds those that are missing frontmatter keys
-	// async findFilesNeedFixing() {
-	// 	// TODO
-	// }
+	findFilesThatNeedFixing(): TFile[] {
+		return this.app.vault.getMarkdownFiles().filter(file => {
+			var cache = this.app.metadataCache.getFileCache(file).frontmatter;
+
+			// im unsure what to do if there is no cache
+			if (cache === undefined)
+				return true;
+
+			return !(this.settings.creationTimeKey in cache
+				&& this.settings.modificationTimeKey in cache);
+		});
+	}
 
 	async create(file: TAbstractFile) {
 		if (file instanceof TFile) {
@@ -73,6 +83,12 @@ ${this.settings.modificationTimeKey}: X
 		// 		this.enableCreateEvent();
 		// 	}, 1000);
 		// }
+
+		this.addCommand({
+			id: "timekeeper-find-missing",
+			name: "Find files without timekeeper frontmatter",
+			callback: () => new ShowFilesModal(this.app, this.findFilesThatNeedFixing()).open(),
+		});
 
 		this.addSettingTab(new TimekeeperSettingsTab(this.app, this));
 	}

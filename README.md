@@ -9,5 +9,3 @@ Add `mtime` (name is configurable) property in frontmatter in every file you wan
 ## Installation
 ### Manual
 Download latest plugin archive from [here](https://github.com/sandorex/timekeeper-plugin/releases/latest/download/timekeeper.zip) and extract into `.obsidian/plugin/`
-
-Alternatively you can manually download [`main.js`](https://github.com/sandorex/timekeeper-plugin/releases/latest/download/main.js) and [`manifest.json`](https://github.com/sandorex/timekeeper-plugin/releases/latest/download/manifest.json)and copy them into `.obsidian/plugin/timekeeper/`
