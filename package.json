@@ -1,6 +1,6 @@
 {
 	"name": "timekeeper",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "Simple plugins that maintains creation and modification time of files",
 	"main": "main.js",
 	"scripts": {
